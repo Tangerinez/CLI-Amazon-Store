@@ -143,7 +143,7 @@ function buyAgain() {
     .prompt({
       name: "action",
       type: "list",
-      message: "Would you like to re-enter the marketplace?",
+      message: "Return to the beginning?",
       choices: ["Yes", "No"]
     })
     .then(function(response) {
