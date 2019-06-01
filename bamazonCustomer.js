@@ -29,6 +29,7 @@ function initialize() {
       choices: ["Yes", "No"]
     })
     .then(function(response) {
+      console.log("--------------------------------------------------");
       if (response.action === "Yes") {
         displayDatabaseItems();
       } else if (response.action === "No") {
@@ -73,6 +74,7 @@ function displayDatabaseItems() {
           }
         ])
         .then(function(response) {
+          console.log("--------------------------------------------------");
           checkStoreForQuantity(response.item_ID, response.quantity);
         });
     }
@@ -93,6 +95,7 @@ function checkStoreForQuantity(response_item_ID, response_quantity) {
             choices: ["Yes", "No"]
           })
           .then(function(response) {
+            console.log("--------------------------------------------------");
             if (response.action === "Yes") {
               updateDatabase(
                 res[response_item_ID - 1].item_id,
@@ -125,6 +128,7 @@ function updateDatabase(
     "UPDATE products SET stock_quantity = ? WHERE item_id=?",
     [database_stock_quantity - response_quantity, database_item_id],
     function(err, res) {
+      console.log("--------------------------------------------------");
       console.log(
         `You purchased ${response_quantity} orders of ${product_name}!`
       );
@@ -147,6 +151,7 @@ function buyAgain() {
       choices: ["Yes", "No"]
     })
     .then(function(response) {
+      console.log("--------------------------------------------------");
       if (response.action === "Yes") {
         initialize();
       } else if (response.action === "No") {

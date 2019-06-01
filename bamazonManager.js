@@ -17,8 +17,7 @@ const connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  // initialize();
-  addToInventory();
+  initialize();
 });
 
 function initialize() {
@@ -36,6 +35,7 @@ function initialize() {
       ]
     })
     .then(function(response) {
+      console.log("--------------------------------------------------");
       switch (response.action) {
         case "View Products for Sale":
           viewProducts();
@@ -76,6 +76,7 @@ function viewProducts() {
           ]
         })
         .then(function(response) {
+          console.log("--------------------------------------------------");
           switch (response.action) {
             case "View Low Inventory":
               viewLowInventory();
@@ -117,6 +118,7 @@ function viewLowInventory() {
               ]
             })
             .then(function(response) {
+              console.log("--------------------------------------------------");
               switch (response.action) {
                 case "View Products for Sale":
                   viewProducts();
@@ -208,6 +210,7 @@ function addToProduct(
     "UPDATE products SET stock_quantity = ? WHERE item_id=?",
     [product_quantity + parseInt(response_quantity), product_ID],
     function(err, res) {
+      console.log("--------------------------------------------------");
       console.log(
         `You added ${response_quantity} ${product_name}s to the existing inventory!`
       );
@@ -237,7 +240,7 @@ function addToProduct(
             case "View Low Inventory":
               viewLowInventory();
               break;
-            case "Add to Inventory":
+            case "Add to Inventory again":
               addToInventory();
               break;
             case "Add New Product":
@@ -251,4 +254,125 @@ function addToProduct(
         });
     }
   );
+}
+
+function addNewProduct() {
+  inquirer
+    .prompt([
+      {
+        name: "name",
+        type: "input",
+        message: "Please enter the name of the product you want to add: ",
+        validate: function(value) {
+          if (typeof value === "string") {
+            return true;
+          }
+          console.log("Please enter a valid product name");
+          return false;
+        }
+      },
+      {
+        name: "category",
+        type: "input",
+        message: "Please enter category this product falls under: ",
+        validate: function(value) {
+          if (typeof value === "string") {
+            return true;
+          }
+          console.log("Please enter a valid category name!");
+          return false;
+        }
+      },
+      {
+        name: "department",
+        type: "input",
+        message: "Please enter department this product falls under: ",
+        validate: function(value) {
+          if (typeof value === "string") {
+            return true;
+          }
+          console.log("Please enter a valid department name!");
+          return false;
+        }
+      },
+      {
+        name: "price",
+        type: "input",
+        message: "Please enter price of this product: ",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          console.log("Please enter a whole number");
+          return false;
+        }
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "Please enter how much of this product you're adding: ",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          console.log("Please enter a whole number");
+          return false;
+        }
+      }
+    ])
+    .then(function(response) {
+      let query = connection.query(
+        "INSERT INTO products (product_name, category, department_name, price, stock_quantity) VALUES (?,?,?,?,?)",
+        [
+          response.name,
+          response.category,
+          response.department,
+          response.price,
+          response.quantity
+        ],
+        function(err, res) {
+          console.log("--------------------------------------------------");
+          console.log(`You have just added the following item to the products table: 
+Product Name: ${response.name}
+Category: ${response.category}
+Department: ${response.department}
+Price: ${response.price}
+Quantity: ${response.quantity}`);
+
+          inquirer
+            .prompt({
+              name: "action",
+              type: "list",
+              message: "What would you like to do next?",
+              choices: [
+                "Add another product",
+                "View Products for Sale",
+                "View Low Inventory",
+                "Add to Inventory",
+                "Exit"
+              ]
+            })
+            .then(function(response) {
+              switch (response.action) {
+                case "View Products for Sale":
+                  viewProducts();
+                  break;
+                case "View Low Inventory":
+                  viewLowInventory();
+                  break;
+                case "Add to Inventory":
+                  addToInventory();
+                  break;
+                case "Add another product":
+                  addNewProduct();
+                  break;
+                case "Exit":
+                  console.log("Goodbye Manager!");
+                  connection.end();
+                  break;
+              }
+            });
+        }
+      );
+    });
 }
