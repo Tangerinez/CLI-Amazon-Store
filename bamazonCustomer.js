@@ -137,6 +137,7 @@ function updateDatabase(
         `Updated stock of ${product_name}: ${database_stock_quantity -
           response_quantity}`
       );
+      updateSales(database_item_id, response_quantity, price);
       buyAgain();
     }
   );
@@ -159,4 +160,26 @@ function buyAgain() {
         connection.end();
       }
     });
+}
+
+function updateSales(database_item_id, response_quantity, price) {
+  let query = connection.query(
+    "SELECT * FROM products WHERE item_id=?",
+    [database_item_id],
+    function(err, res) {
+      addToSales(
+        res[0].product_sales,
+        database_item_id,
+        response_quantity,
+        price
+      );
+    }
+  );
+}
+
+function addToSales(currentSales, database_item_id, response_quantity, price) {
+  let query = connection.query(
+    "UPDATE products SET product_sales = ? WHERE item_id=?",
+    [currentSales + response_quantity * price, database_item_id]
+  );
 }
