@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+const { table } = require("table");
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -56,7 +57,11 @@ function viewProductSales() {
       for (var i = 0; i < res.length; i++) {
         addTotalProfit(res[i], res[i].product_sales, res[i].over_head_costs);
       }
-      console.log(res);
+      console.log("--------------------------------------------------");
+      let departmentArrayOfArrays = res.map(obj => Object.values(obj));
+      let data = departmentArrayOfArrays;
+      let output = table(data);
+      console.log(output);
     }
   );
 }
