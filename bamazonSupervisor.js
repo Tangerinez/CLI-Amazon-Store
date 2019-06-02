@@ -59,6 +59,7 @@ function viewProductSales() {
       }
       console.log("--------------------------------------------------");
       let departmentArrayOfArrays = res.map(obj => Object.values(obj));
+      addColumnTitles(departmentArrayOfArrays);
       let data = departmentArrayOfArrays;
       let output = table(data);
       console.log(output);
@@ -68,4 +69,16 @@ function viewProductSales() {
 
 function addTotalProfit(departmentObject, sales, overHeadCosts) {
   departmentObject.total_profit = sales - overHeadCosts;
+}
+
+function addColumnTitles(arr) {
+  let titleArr = [];
+  titleArr.push(
+    "department_id",
+    "department_name",
+    "over_head_costs",
+    "product_sales",
+    "total_profit"
+  );
+  arr.unshift(titleArr);
 }
